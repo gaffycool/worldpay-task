@@ -1,6 +1,7 @@
 package com.example.worldpay.domain.usecase
 
 import com.example.worldpay.domain.common.*
+import com.example.worldpay.domain.entity.AuthRequest
 import com.example.worldpay.domain.entity.AuthResponse
 import com.example.worldpay.domain.repository.PaymentRepository
 import io.reactivex.Observable
@@ -37,6 +38,8 @@ class AuthorizePaymentUseCase @Inject constructor(private val paymentRepo: Payme
                 }.toObservable()
             }
         }
-        return Observable.empty()
+        return paymentRepo.authorizePayment(AuthRequest(data?.get(CARD_NO).toString(),
+            data?.get(CARD_HOLDER_NAME).toString(),data?.get(EXPIRY_MONTH).toString().toInt(),
+            data?.get(EXPIRY_YEAR).toString().toInt(),data?.get(CVV).toString().toInt())).toObservable()
     }
 }
