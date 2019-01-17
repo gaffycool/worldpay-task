@@ -1,31 +1,25 @@
 package com.example.worldpay.domain.usercase
 
 import com.example.worldpay.RxImmediateSchedulerRule
-import com.example.worldpay.data.repository.PaymentRepositoryImpl
-import com.example.worldpay.domain.common.PAYMENT_REQUEST
+import com.example.worldpay.domain.common.*
+import com.example.worldpay.domain.entity.AuthRequest
 import com.example.worldpay.domain.entity.AuthResponse
 import com.example.worldpay.domain.repository.PaymentRepository
 import com.example.worldpay.domain.usecase.AuthorizePaymentUseCase
-import com.example.worldpay.presentation.entity.PaymentDetail
-import com.nhaarman.mockito_kotlin.verify
 import io.reactivex.Single
 import io.reactivex.observers.TestObserver
-import io.reactivex.subscribers.TestSubscriber
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
 import org.mockito.Mock
+import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 import org.mockito.junit.MockitoJUnit
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.junit.MockitoRule
-import javax.inject.Inject
-
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.any
-import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
 @RunWith(MockitoJUnitRunner::class)
 class AuthorizePaymentTest {
@@ -43,27 +37,107 @@ class AuthorizePaymentTest {
     lateinit var authorizePaymentUseCase: AuthorizePaymentUseCase
 
     @Before
-    fun setUp(){
+    fun setUp() {
         MockitoAnnotations.initMocks(this)
         authorizePaymentUseCase = AuthorizePaymentUseCase(paymentRepository)
     }
 
     @Test
-    fun testAuthorizePaymentSuccess(){
-        val testSubscriber:TestObserver<AuthResponse> = TestObserver()
+    fun testAuthorizePaymentFailureWithCardNoRequired() {
+        val testSubscriber: TestObserver<AuthResponse> = TestObserver()
 
-        val authResponse =  AuthResponse(200,"Success")
-        val paymentDetail = PaymentDetail("1234123412341234","Gaffar Akhtar",10,24,310)
-        `when`(paymentRepository.authorizePayment(paymentDetail.toAuthRequest())).thenReturn(Single.create {
-            it.onSuccess(authResponse)})
-
-        val data = mutableMapOf<String,Any>()
-        data[PAYMENT_REQUEST] = paymentDetail
+        val data = mutableMapOf<String, Any>()
+        data[CARD_NO] = ""
         val result = authorizePaymentUseCase.createObservable(data)
         result.subscribe(testSubscriber)
 
         testSubscriber.assertNoErrors()
         testSubscriber.assertValueCount(1)
+        assertEquals(500, testSubscriber.values()[0].statusCode)
+        assertEquals(CARD_NO_REQUIRED, testSubscriber.values()[0].message)
+    }
+
+    @Test
+    fun testAuthorizePaymentFailureWithCardHolderNameRequired() {
+        val testSubscriber: TestObserver<AuthResponse> = TestObserver()
+
+        val data = mutableMapOf<String, Any>()
+        data[CARD_NO] = ""
+        val result = authorizePaymentUseCase.createObservable(data)
+        result.subscribe(testSubscriber)
+
+        testSubscriber.assertNoErrors()
+        testSubscriber.assertValueCount(1)
+        assertEquals(500, testSubscriber.values()[0].statusCode)
+        assertEquals(CARD_NO_REQUIRED, testSubscriber.values()[0].message)
+    }
+
+    @Test
+    fun testAuthorizePaymentFailureWithExpiryMonthRequired() {
+        val testSubscriber: TestObserver<AuthResponse> = TestObserver()
+
+        val data = mutableMapOf<String, Any>()
+        data[CARD_NO] = ""
+        val result = authorizePaymentUseCase.createObservable(data)
+        result.subscribe(testSubscriber)
+
+        testSubscriber.assertNoErrors()
+        testSubscriber.assertValueCount(1)
+        assertEquals(500, testSubscriber.values()[0].statusCode)
+        assertEquals(CARD_NO_REQUIRED, testSubscriber.values()[0].message)
+    }
+
+    @Test
+    fun testAuthorizePaymentFailureWithExpiryYearRequired() {
+        val testSubscriber: TestObserver<AuthResponse> = TestObserver()
+
+        val data = mutableMapOf<String, Any>()
+        data[CARD_NO] = ""
+        val result = authorizePaymentUseCase.createObservable(data)
+        result.subscribe(testSubscriber)
+
+        testSubscriber.assertNoErrors()
+        testSubscriber.assertValueCount(1)
+        assertEquals(500, testSubscriber.values()[0].statusCode)
+        assertEquals(CARD_NO_REQUIRED, testSubscriber.values()[0].message)
+    }
+
+    @Test
+    fun testAuthorizePaymentFailureWithCVVRequired() {
+        val testSubscriber: TestObserver<AuthResponse> = TestObserver()
+
+        val data = mutableMapOf<String, Any>()
+        data[CARD_NO] = ""
+        val result = authorizePaymentUseCase.createObservable(data)
+        result.subscribe(testSubscriber)
+
+        testSubscriber.assertNoErrors()
+        testSubscriber.assertValueCount(1)
+        assertEquals(500, testSubscriber.values()[0].statusCode)
+        assertEquals(CARD_NO_REQUIRED, testSubscriber.values()[0].message)
+    }
+
+    @Test
+    fun testAuthorizePaymentSuccess() {
+        val testSubscriber: TestObserver<AuthResponse> = TestObserver()
+        val authResponse = AuthResponse(200,"Success")
+        val data = mutableMapOf<String, Any>()
+        data[CARD_NO] = "1234123412341234"
+        data[CARD_HOLDER_NAME]="Gaffar"
+        data[EXPIRY_MONTH]=10
+        data[EXPIRY_YEAR]=24
+        data[CVV]=330
+        val authRequest = AuthRequest("1234123412341234","Gaffar",10,24,330)
+        `when`(paymentRepository.authorizePayment(authRequest)).thenReturn(Single.create {
+            it.onSuccess(authResponse)
+        })
+
+        val result = authorizePaymentUseCase.createObservable(data)
+        result.subscribe(testSubscriber)
+
+        testSubscriber.assertNoErrors()
+        testSubscriber.assertValueCount(1)
+        assertEquals(200, testSubscriber.values()[0].statusCode)
     }
 
 }
