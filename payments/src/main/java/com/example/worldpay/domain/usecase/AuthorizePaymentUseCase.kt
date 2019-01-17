@@ -1,7 +1,6 @@
 package com.example.worldpay.domain.usecase
 
-import com.example.worldpay.domain.common.CARD_NO
-import com.example.worldpay.domain.common.CARD_NO_REQUIRED
+import com.example.worldpay.domain.common.*
 import com.example.worldpay.domain.entity.AuthResponse
 import com.example.worldpay.domain.repository.PaymentRepository
 import io.reactivex.Observable
@@ -15,6 +14,26 @@ class AuthorizePaymentUseCase @Inject constructor(private val paymentRepo: Payme
             data?.get(CARD_NO)?.toString()?.isEmpty()!! ->{
                 return Single.create<AuthResponse> {
                     it.onSuccess(AuthResponse(500, CARD_NO_REQUIRED))
+                }.toObservable()
+            }
+            data[CARD_HOLDER_NAME]?.toString()?.isEmpty()!! ->{
+                return Single.create<AuthResponse> {
+                    it.onSuccess(AuthResponse(500, CARD_HOLDER_NAME_REQUIRED))
+                }.toObservable()
+            }
+            data[EXPIRY_MONTH]?.toString()?.isEmpty()!! ->{
+                return Single.create<AuthResponse> {
+                    it.onSuccess(AuthResponse(500, EXPIRY_MONTH_REQUIRED))
+                }.toObservable()
+            }
+            data[EXPIRY_YEAR]?.toString()?.isEmpty()!! ->{
+                return Single.create<AuthResponse> {
+                    it.onSuccess(AuthResponse(500, EXPIRY_YEAR_REQUIRED))
+                }.toObservable()
+            }
+            data[CVV]?.toString()?.isEmpty()!! ->{
+                return Single.create<AuthResponse> {
+                    it.onSuccess(AuthResponse(500, CVV_REQUIRED))
                 }.toObservable()
             }
         }
