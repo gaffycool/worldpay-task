@@ -2,6 +2,8 @@ package com.brighterbrain.project0.di.module
 
 import android.app.Application
 import android.content.Context
+import com.example.worldpay.data.repository.PaymentRepositoryImpl
+import com.example.worldpay.domain.repository.PaymentRepository
 import com.example.worldpay.presentation.di.ApplicationContext
 import dagger.Module
 import dagger.Provides
@@ -18,6 +20,10 @@ class ApplicationModule(application: Application) {
     @Provides
     fun provideApplication(): Application{
         return mApplication
+    }
+    @Provides
+    fun providePaymentRepository(): PaymentRepository{
+        return PaymentRepositoryImpl()
     }
 
 }

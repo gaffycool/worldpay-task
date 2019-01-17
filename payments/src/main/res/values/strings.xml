@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">WorldPay</string>
     <string name="action_settings">Settings</string>
+    <string name="card_number">Card Number</string>
+    <string name="card_holder_name">Card Holder Name</string>
+    <string name="expiry_month">Expiry Month</string>
+    <string name="expiry_year">Expiry Year</string>
+    <string name="cvv">CVV</string>
+    <string name="submit">Submit</string>
 </resources>

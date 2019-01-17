@@ -42,4 +42,8 @@ dependencies {
     //RxJava
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
     implementation 'io.reactivex.rxjava2:rxjava:2.2.2'
+
+    //Test Dependencies
+    testImplementation 'org.mockito:mockito-core:2.23.4'
+    testImplementation "com.nhaarman:mockito-kotlin:1.6.0"
 }
