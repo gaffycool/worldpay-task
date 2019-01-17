@@ -48,6 +48,10 @@ class AuthorizePaymentTest {
 
         val data = mutableMapOf<String, Any>()
         data[CARD_NO] = ""
+        data[CARD_HOLDER_NAME]=""
+        data[EXPIRY_MONTH]=""
+        data[EXPIRY_YEAR]=""
+        data[CVV]=""
         val result = authorizePaymentUseCase.createObservable(data)
         result.subscribe(testSubscriber)
 
@@ -62,14 +66,18 @@ class AuthorizePaymentTest {
         val testSubscriber: TestObserver<AuthResponse> = TestObserver()
 
         val data = mutableMapOf<String, Any>()
-        data[CARD_NO] = ""
+        data[CARD_NO] = "1234123412341234"
+        data[CARD_HOLDER_NAME]=""
+        data[EXPIRY_MONTH]=""
+        data[EXPIRY_YEAR]=""
+        data[CVV]=""
         val result = authorizePaymentUseCase.createObservable(data)
         result.subscribe(testSubscriber)
 
         testSubscriber.assertNoErrors()
         testSubscriber.assertValueCount(1)
         assertEquals(500, testSubscriber.values()[0].statusCode)
-        assertEquals(CARD_NO_REQUIRED, testSubscriber.values()[0].message)
+        assertEquals(CARD_HOLDER_NAME_REQUIRED, testSubscriber.values()[0].message)
     }
 
     @Test
@@ -77,14 +85,18 @@ class AuthorizePaymentTest {
         val testSubscriber: TestObserver<AuthResponse> = TestObserver()
 
         val data = mutableMapOf<String, Any>()
-        data[CARD_NO] = ""
+        data[CARD_NO] = "1234123412341234"
+        data[CARD_HOLDER_NAME]="Gaffar"
+        data[EXPIRY_MONTH]=""
+        data[EXPIRY_YEAR]=""
+        data[CVV]=""
         val result = authorizePaymentUseCase.createObservable(data)
         result.subscribe(testSubscriber)
 
         testSubscriber.assertNoErrors()
         testSubscriber.assertValueCount(1)
         assertEquals(500, testSubscriber.values()[0].statusCode)
-        assertEquals(CARD_NO_REQUIRED, testSubscriber.values()[0].message)
+        assertEquals(EXPIRY_MONTH_REQUIRED, testSubscriber.values()[0].message)
     }
 
     @Test
@@ -92,14 +104,18 @@ class AuthorizePaymentTest {
         val testSubscriber: TestObserver<AuthResponse> = TestObserver()
 
         val data = mutableMapOf<String, Any>()
-        data[CARD_NO] = ""
+        data[CARD_NO] = "1234123412341234"
+        data[CARD_HOLDER_NAME]="Gaffar"
+        data[EXPIRY_MONTH]="10"
+        data[EXPIRY_YEAR]=""
+        data[CVV]=""
         val result = authorizePaymentUseCase.createObservable(data)
         result.subscribe(testSubscriber)
 
         testSubscriber.assertNoErrors()
         testSubscriber.assertValueCount(1)
         assertEquals(500, testSubscriber.values()[0].statusCode)
-        assertEquals(CARD_NO_REQUIRED, testSubscriber.values()[0].message)
+        assertEquals(EXPIRY_YEAR_REQUIRED, testSubscriber.values()[0].message)
     }
 
     @Test
@@ -107,14 +123,18 @@ class AuthorizePaymentTest {
         val testSubscriber: TestObserver<AuthResponse> = TestObserver()
 
         val data = mutableMapOf<String, Any>()
-        data[CARD_NO] = ""
+        data[CARD_NO] = "1234123412341234"
+        data[CARD_HOLDER_NAME]="Gaffar"
+        data[EXPIRY_MONTH]="10"
+        data[EXPIRY_YEAR]="24"
+        data[CVV]=""
         val result = authorizePaymentUseCase.createObservable(data)
         result.subscribe(testSubscriber)
 
         testSubscriber.assertNoErrors()
         testSubscriber.assertValueCount(1)
         assertEquals(500, testSubscriber.values()[0].statusCode)
-        assertEquals(CARD_NO_REQUIRED, testSubscriber.values()[0].message)
+        assertEquals(CVV_REQUIRED, testSubscriber.values()[0].message)
     }
 
     @Test
@@ -124,9 +144,9 @@ class AuthorizePaymentTest {
         val data = mutableMapOf<String, Any>()
         data[CARD_NO] = "1234123412341234"
         data[CARD_HOLDER_NAME]="Gaffar"
-        data[EXPIRY_MONTH]=10
-        data[EXPIRY_YEAR]=24
-        data[CVV]=330
+        data[EXPIRY_MONTH]="10"
+        data[EXPIRY_YEAR]="24"
+        data[CVV]="330"
         val authRequest = AuthRequest("1234123412341234","Gaffar",10,24,330)
         `when`(paymentRepository.authorizePayment(authRequest)).thenReturn(Single.create {
             it.onSuccess(authResponse)
